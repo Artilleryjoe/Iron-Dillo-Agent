@@ -15,7 +15,22 @@ class Document:
     tags: List[str]
 
     def preview(self, length: int = 120) -> str:
-        """Return a short excerpt for debugging and UI displays."""
+        """Return a short excerpt for debugging and UI displays.
+
+        Parameters
+        ----------
+        length:
+            Maximum number of characters to include before truncating with an
+            ellipsis. The value must be a positive integer.
+
+        Raises
+        ------
+        ValueError
+            If *length* is less than or equal to zero.
+        """
+
+        if length <= 0:
+            raise ValueError("length must be a positive integer")
 
         excerpt = self.content.strip().replace("\n", " ")
         if len(excerpt) <= length:
