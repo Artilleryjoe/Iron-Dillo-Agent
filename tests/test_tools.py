@@ -6,8 +6,14 @@ import random
 
 import pytest
 
-from buddy_facts import get_random_fact, list_facts
-from tools import RAGStore, assess_risk, get_compliance_guide, get_security_tip
+from iron_dillo import (
+    RAGStore,
+    assess_risk,
+    get_compliance_guide,
+    get_random_fact,
+    get_security_tip,
+    list_facts,
+)
 
 
 def test_get_security_tip_returns_actions():
