@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class ToolCall(BaseModel):
@@ -13,7 +13,8 @@ class ToolCall(BaseModel):
     name: str = Field(..., min_length=1, description="Name of the tool to execute")
     arguments: Dict[str, Any] = Field(default_factory=dict)
 
-    @validator("name")
+    @field_validator("name", mode="before")
+    @classmethod
     def _normalize_name(cls, value: str) -> str:
         return value.strip()
 
