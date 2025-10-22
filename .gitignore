@@ -13,6 +13,12 @@ venv/
 data/
 artifacts/
 cache/
+iron_dillo_cybersandbox_ai/data/*
+!iron_dillo_cybersandbox_ai/data/.gitkeep
+iron_dillo_cybersandbox_ai/data/chroma/
+iron_dillo_cybersandbox_ai/data/audit.log
+iron_dillo_cybersandbox_ai/vault/*
+!iron_dillo_cybersandbox_ai/vault/.gitkeep
 # OS
 .DS_Store
 Thumbs.db

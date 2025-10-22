@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iron Dillo Cybersandbox AI</title>
+    <link rel="stylesheet" href="/static/styles/tailwind.css" />
+    <script defer src="/static/app.js"></script>
+  </head>
+  <body class="bg-slate-950 text-slate-100">
+    <div class="max-w-5xl mx-auto py-10 px-6">
+      <header class="mb-8">
+        <h1 class="text-3xl font-semibold">Iron Dillo Cybersandbox AI</h1>
+        <p class="text-slate-300">Local-first experimentation with prompts, RAG, and cyber mini-apps.</p>
+      </header>
+      <nav class="flex gap-3 mb-6" id="tabs">
+        <button class="tab active" data-target="chat">Chat</button>
+        <button class="tab" data-target="rag">RAG</button>
+        <button class="tab" data-target="vectors">Vectors</button>
+        <button class="tab" data-target="security">Security Tools</button>
+      </nav>
+      <section id="chat" class="panel active">
+        <h2 class="text-xl font-medium mb-2">Prompt Playground</h2>
+        <textarea id="chat-input" class="w-full h-32 p-3 rounded bg-slate-900 border border-slate-700" placeholder="Ask Iron Dillo something..."></textarea>
+        <button id="chat-send" class="mt-3 px-4 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Send</button>
+        <pre id="chat-response" class="mt-4 bg-slate-900 p-4 rounded border border-slate-800 overflow-auto"></pre>
+      </section>
+      <section id="rag" class="panel">
+        <h2 class="text-xl font-medium mb-2">Document RAG</h2>
+        <form id="rag-form" class="space-y-3">
+          <input type="file" id="rag-file" class="block" />
+          <button type="submit" class="px-4 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Ingest</button>
+        </form>
+        <textarea id="rag-query" class="w-full h-24 p-3 mt-4 rounded bg-slate-900 border border-slate-700" placeholder="Ask a question about your vault..."></textarea>
+        <button id="rag-search" class="mt-3 px-4 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Query</button>
+        <pre id="rag-results" class="mt-4 bg-slate-900 p-4 rounded border border-slate-800 overflow-auto"></pre>
+      </section>
+      <section id="vectors" class="panel">
+        <h2 class="text-xl font-medium mb-2">Embedding Explorer</h2>
+        <button id="load-vectors" class="px-4 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Load UMAP Projection</button>
+        <canvas id="vector-canvas" width="640" height="360" class="mt-4 bg-slate-900 border border-slate-800 rounded"></canvas>
+        <pre id="vector-meta" class="mt-4 bg-slate-900 p-4 rounded border border-slate-800 overflow-auto"></pre>
+      </section>
+      <section id="security" class="panel">
+        <h2 class="text-xl font-medium mb-2">Security Mini-Apps</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <h3 class="font-semibold">IOC Extractor</h3>
+            <textarea id="ioc-input" class="w-full h-32 p-3 rounded bg-slate-900 border border-slate-700" placeholder="Paste text to scan for indicators..."></textarea>
+            <button id="ioc-run" class="mt-2 px-3 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Extract</button>
+            <pre id="ioc-results" class="mt-3 bg-slate-900 p-3 rounded border border-slate-800 overflow-auto"></pre>
+          </div>
+          <div>
+            <h3 class="font-semibold">Email Header Analyzer</h3>
+            <textarea id="header-input" class="w-full h-32 p-3 rounded bg-slate-900 border border-slate-700" placeholder="Paste raw email headers..."></textarea>
+            <button id="header-run" class="mt-2 px-3 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Parse</button>
+            <pre id="header-results" class="mt-3 bg-slate-900 p-3 rounded border border-slate-800 overflow-auto"></pre>
+          </div>
+          <div class="md:col-span-2">
+            <h3 class="font-semibold">Log Summarizer</h3>
+            <textarea id="log-input" class="w-full h-32 p-3 rounded bg-slate-900 border border-slate-700" placeholder="Paste log lines..."></textarea>
+            <button id="log-run" class="mt-2 px-3 py-2 rounded bg-emerald-500 text-slate-950 font-semibold">Summarize</button>
+            <pre id="log-results" class="mt-3 bg-slate-900 p-3 rounded border border-slate-800 overflow-auto"></pre>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

@@ -64,6 +64,15 @@ Source files live under `src/iron_dillo/` and are exposed through the
 - `memory.py` – SQLite-backed preference store.
 - `tools/` – composable domain helpers for awareness, compliance, risk, and RAG.
 
+## Additional sandbox
+
+The repository also ships with **Iron Dillo Cybersandbox AI (IDCSA)** under
+`iron_dillo_cybersandbox_ai/`. The sandbox provides a FastAPI backend, Tailwind
+inspired frontend, and helper scripts for running a completely offline
+Ollama-powered workflow featuring prompt vector exploration, document RAG, and
+security mini-apps. See `iron_dillo_cybersandbox_ai/README.md` for usage
+details.
+
 ## Development notes
 
 - Do not commit API keys or tokens. Use environment variables instead.
