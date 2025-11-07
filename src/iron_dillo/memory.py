@@ -7,7 +7,12 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, Iterator, Optional
 
-_DEFAULT_PATH = Path("data/preferences.db")
+from .config import get_settings
+
+
+def _default_preferences_path() -> Path:
+    settings = get_settings()
+    return settings.preferences_path
 
 
 class PreferenceStore:
@@ -15,7 +20,7 @@ class PreferenceStore:
 
     def __init__(self, path: str | Path | None = None) -> None:
         if path is None:
-            self._path: str | Path = _DEFAULT_PATH
+            self._path: str | Path = _default_preferences_path()
         else:
             self._path = path
 

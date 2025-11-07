@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 from typing import Optional
 
 from .agent_model import AgentResponse, AgentTurn, ToolCall
 from .buddy_facts import get_random_fact
+from .config import Settings, get_settings, load_settings
+from .logging_utils import configure_logging, get_logger
 from .tools import assess_risk, get_compliance_guide, get_security_tip
 
 __all__ = ["build_security_brief", "main"]
@@ -21,8 +24,24 @@ def build_security_brief(
     impact: str = "medium",
     likelihood: str = "possible",
     include_fact: bool = True,
+    *,
+    settings: Settings | None = None,
 ) -> AgentResponse:
     """Generate a briefing that blends tips, compliance, and risk insights."""
+
+    settings = settings or get_settings()
+    logger = get_logger("brief")
+    logger.info(
+        "Building security brief",
+        extra={
+            "audience": audience,
+            "topic": topic,
+            "compliance": compliance_standard,
+            "impact": impact,
+            "likelihood": likelihood,
+            "environment": settings.environment,
+        },
+    )
 
     turn = AgentTurn(prompt=prompt, audience=audience, include_fact=include_fact)
 
@@ -81,6 +100,14 @@ def build_security_brief(
 
     fact: Optional[str] = get_random_fact() if turn.include_fact else None
 
+    logger.debug(
+        "Brief assembled",
+        extra={
+            "tool_calls": [call.name for call in tool_calls],
+            "fact_included": fact is not None,
+        },
+    )
+
     return AgentResponse(
         message="\n".join(message_lines),
         fact=fact,
@@ -124,12 +151,29 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Disable rotating armadillo facts",
     )
+    parser.add_argument(
+        "--config",
+        action="append",
+        type=Path,
+        help="Optional path to a JSON or TOML configuration file",
+    )
     return parser
 
 
 def main() -> None:
     parser = _build_parser()
     args = parser.parse_args()
+
+    settings = (
+        load_settings(override_files=args.config)
+        if args.config
+        else get_settings()
+    )
+    logger = configure_logging(settings)
+    logger.info(
+        "Iron Dillo CLI started",
+        extra={"environment": settings.environment, "log_level": settings.log_level},
+    )
 
     response = build_security_brief(
         prompt=args.prompt,
@@ -139,6 +183,7 @@ def main() -> None:
         impact=args.impact,
         likelihood=args.likelihood,
         include_fact=not args.no_fact,
+        settings=settings,
     )
 
     print(response.message)

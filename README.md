@@ -45,6 +45,21 @@ python agent.py "How should I protect payroll systems?" --audience small_busines
 Available options can be listed with `python agent.py --help`. The CLI stitches
 together security tips, compliance checklists, and a qualitative risk assessment.
 
+### Configuration and logging
+
+Iron Dillo now exposes an enterprise-friendly configuration system that reads
+environment variables, `.env` files, and JSON/TOML configuration documents. Pass
+one or more configuration files using the `--config` flag:
+
+```bash
+iron-dillo "Brief my board on phishing" --config ops.json --config secrets.toml
+```
+
+These settings centralize deployment environment names, log levels, and the data
+directory where user preferences are stored. Structured logging is enabled by
+default with configurable log levels so the CLI integrates cleanly into
+observability stacks.
+
 ## Running tests
 
 The repository includes a lightweight pytest suite:
