@@ -24,7 +24,6 @@ def build_security_brief(
     impact: str = "medium",
     likelihood: str = "possible",
     include_fact: bool = True,
-    *,
     settings: Settings | None = None,
 ) -> AgentResponse:
     """Generate a briefing that blends tips, compliance, and risk insights."""
