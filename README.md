@@ -45,6 +45,19 @@ python agent.py "How should I protect payroll systems?" --audience small_busines
 Available options can be listed with `python agent.py --help`. The CLI stitches
 together security tips, compliance checklists, and a qualitative risk assessment.
 
+### GUI control room
+
+Launch the graphical control room with modern chat and briefing panes by running:
+
+```bash
+iron-dillo-gui --host 127.0.0.1 --port 8000 --open-browser
+```
+
+This starts a FastAPI-powered experience that renders the Security Brief
+Generator alongside a dedicated LLM chat surface. The server stays local, works
+offline with the deterministic fallback, and automatically upgrades to a local
+Ollama model when available.
+
 ### Configuration and logging
 
 Iron Dillo now exposes an enterprise-friendly configuration system that reads

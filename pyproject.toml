@@ -23,6 +23,7 @@ dependencies = [
 
 [project.scripts]
 iron-dillo = "iron_dillo.cli:main"
+iron-dillo-gui = "iron_dillo.gui:main"
 
 [tool.pytest.ini_options]
 minversion = "8.0"
