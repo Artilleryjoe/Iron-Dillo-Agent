@@ -23,6 +23,22 @@ _TIPS: Dict[str, Dict[str, Dict[str, List[str]]]] = {
                 "Enable encrypted backups to a trusted cloud provider.",
             ],
         },
+        "cloud": {
+            "summary": "Protect cloud accounts with hardened authentication and alerting.",
+            "actions": [
+                "Enable phishing-resistant MFA wherever passkeys are supported.",
+                "Turn on impossible-travel and suspicious-login alerts.",
+                "Review third-party app access to email and storage quarterly.",
+            ],
+        },
+        "incident_response": {
+            "summary": "Prepare simple but practiced response steps before an emergency.",
+            "actions": [
+                "Keep an offline contact sheet for banks, providers, and family stakeholders.",
+                "Document account recovery steps for critical services in a secure vault.",
+                "Practice one yearly ransomware and identity theft tabletop scenario.",
+            ],
+        },
     },
     "small_businesses": {
         "identity": {
@@ -41,6 +57,30 @@ _TIPS: Dict[str, Dict[str, Dict[str, List[str]]]] = {
                 "Maintain an asset inventory with warranty and patch status.",
             ],
         },
+        "cloud": {
+            "summary": "Establish a zero-trust baseline for SaaS and cloud administration.",
+            "actions": [
+                "Enforce conditional access for privileged roles and remote admins.",
+                "Route cloud audit logs to a SIEM with 12+ months retention.",
+                "Require just-in-time elevation for finance and HR cloud tenants.",
+            ],
+        },
+        "supply_chain": {
+            "summary": "Reduce third-party cyber exposure through measurable vendor controls.",
+            "actions": [
+                "Inventory critical suppliers and assign a cyber risk tier to each.",
+                "Add contract clauses for breach notification and vulnerability disclosure.",
+                "Verify software updates using signed packages and approved repositories.",
+            ],
+        },
+        "incident_response": {
+            "summary": "Operationalize incident response with executive and legal readiness.",
+            "actions": [
+                "Maintain a 24/7 escalation tree that includes legal and communications leads.",
+                "Define evidence handling steps to preserve forensic timelines.",
+                "Run quarterly tabletops that include ransomware, BEC, and cloud takeover playbooks.",
+            ],
+        },
     },
     "rural_operations": {
         "identity": {
@@ -57,6 +97,30 @@ _TIPS: Dict[str, Dict[str, Dict[str, List[str]]]] = {
                 "Place firewalls in front of irrigation and SCADA controllers.",
                 "Use LTE failover with VPN tunnels for remote sites.",
                 "Schedule quarterly tabletop exercises for outage response.",
+            ],
+        },
+        "cloud": {
+            "summary": "Secure distributed cloud operations for remote facilities and co-ops.",
+            "actions": [
+                "Segment farm management SaaS identities from operational administrator accounts.",
+                "Mirror cloud logs to low-bandwidth friendly storage for continuity.",
+                "Validate backup restore procedures before peak planting and harvest windows.",
+            ],
+        },
+        "supply_chain": {
+            "summary": "Prepare for supplier disruption and compromised service providers.",
+            "actions": [
+                "Map dependencies for seed, fuel, and logistics platforms with cyber contacts.",
+                "Require MFA and least privilege for contractor remote maintenance tools.",
+                "Develop contingency playbooks for telecom and satellite service outages.",
+            ],
+        },
+        "incident_response": {
+            "summary": "Coordinate cyber incident response across distributed rural teams.",
+            "actions": [
+                "Pre-stage incident communication templates for low-connectivity sites.",
+                "Assign a response captain for each region and test handoffs twice a year.",
+                "Capture lessons learned after every outage and update SOPs within 10 business days.",
             ],
         },
     },

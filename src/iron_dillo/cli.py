@@ -126,12 +126,12 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--topic",
         default="identity",
-        choices=["identity", "devices"],
+        choices=["identity", "devices", "cloud", "supply_chain", "incident_response"],
         help="Security focus area",
     )
     parser.add_argument(
         "--compliance",
-        help="Optional compliance framework such as nist-csf, hipaa, pci-dss",
+        help="Optional compliance framework such as nist-csf, iso-27001, soc2, cis-controls, nis2, hipaa, pci-dss",
     )
     parser.add_argument(
         "--impact",

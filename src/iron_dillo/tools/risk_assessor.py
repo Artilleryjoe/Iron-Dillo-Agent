@@ -10,23 +10,25 @@ _LIKELIHOOD_WEIGHTS: Dict[str, int] = {"unlikely": 1, "possible": 2, "likely": 3
 
 _BASE_RECOMMENDATIONS: Dict[str, List[str]] = {
     "low": [
-        "Document the finding and monitor quarterly.",
-        "Ensure responsible owner is assigned for follow-up.",
+        "Document the finding, assign an owner, and monitor quarterly.",
+        "Confirm baseline controls remain effective and evidence is retained.",
     ],
     "moderate": [
         "Schedule remediation within the next sprint or 30 days.",
-        "Add the scenario to tabletop drills for Lindale and Tyler teams.",
+        "Track mitigation in a risk register with executive visibility.",
+        "Add the scenario to quarterly tabletop drills.",
     ],
     "high": [
-        "Escalate to leadership and activate incident response plan.",
-        "Engage Iron Dillo managed detection for 24/7 coverage.",
+        "Escalate to leadership and activate the incident response plan.",
+        "Contain affected systems and preserve forensic artifacts.",
+        "Initiate external notification workflows required by policy or regulation.",
     ],
 }
 
 _AUDIENCE_TIPS: Dict[str, str] = {
-    "individuals": "Provide one-on-one coaching on password managers and backups.",
-    "small_businesses": "Review vendor access logs and financial controls with the owner.",
-    "rural_operations": "Coordinate with co-op technology partners on failover testing.",
+    "individuals": "Use password managers, passkeys, and tested backups for critical accounts.",
+    "small_businesses": "Validate vendor access, finance controls, and privileged account hygiene.",
+    "rural_operations": "Coordinate with co-op and field technology partners on failover and response testing.",
 }
 
 

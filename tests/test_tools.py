@@ -35,6 +35,18 @@ def test_get_compliance_guide_includes_checklist():
     assert len(guide["checklist"]) == 5
 
 
+
+
+def test_get_security_tip_cloud_topic_for_small_businesses():
+    result = get_security_tip("small_businesses", "cloud")
+    assert result["topic"] == "cloud"
+    assert any("siem" in action.lower() or "conditional access" in action.lower() for action in result["actions"])
+
+
+def test_get_compliance_guide_iso_27001_available():
+    guide = get_compliance_guide("iso-27001")
+    assert guide["standard"] == "iso-27001"
+    assert "isms" in guide["title"].lower()
 def test_assess_risk_computes_level():
     report = assess_risk(
         audience="small_businesses",
