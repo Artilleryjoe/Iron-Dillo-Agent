@@ -1,4 +1,4 @@
-"""Compliance guidance for common East Texas business standards."""
+"""Compliance guidance for modern and common business standards."""
 
 from __future__ import annotations
 
@@ -6,13 +6,53 @@ from typing import Dict, List
 
 _GUIDES: Dict[str, Dict[str, List[str]]] = {
     "nist-csf": {
-        "title": "NIST Cybersecurity Framework",
+        "title": "NIST Cybersecurity Framework 2.0",
         "checklist": [
-            "Identify critical assets and data owners.",
-            "Protect with MFA, encryption at rest, and least privilege.",
-            "Detect by enabling centralized logging and alert triage.",
-            "Respond through a written incident response playbook.",
-            "Recover using tested backups and post-incident reviews.",
+            "Identify critical assets, business services, and mission dependencies.",
+            "Protect with phishing-resistant MFA, encryption, and least privilege.",
+            "Detect through centralized telemetry, EDR, and continuous monitoring.",
+            "Respond with tested playbooks, legal notification paths, and communications plans.",
+            "Recover via immutable backups, restoration drills, and lessons-learned reviews.",
+        ],
+    },
+    "iso-27001": {
+        "title": "ISO/IEC 27001 ISMS",
+        "checklist": [
+            "Define ISMS scope, risk methodology, and statement of applicability.",
+            "Assign asset owners and classify information by business impact.",
+            "Implement Annex A controls with documented operating procedures.",
+            "Track control effectiveness using internal audits and KPIs.",
+            "Perform management review and continuous improvement cycles.",
+        ],
+    },
+    "soc2": {
+        "title": "SOC 2 Trust Services Criteria",
+        "checklist": [
+            "Map controls to Security, Availability, and Confidentiality criteria.",
+            "Capture change management evidence for production systems.",
+            "Harden identity lifecycle controls for joiner, mover, and leaver events.",
+            "Retain logs and incident records to support auditor sampling.",
+            "Run annual readiness assessments before Type II reporting windows.",
+        ],
+    },
+    "cis-controls": {
+        "title": "CIS Critical Security Controls v8",
+        "checklist": [
+            "Maintain complete enterprise and software asset inventories.",
+            "Enforce secure configuration baselines for endpoints and cloud services.",
+            "Apply vulnerability management with risk-based remediation SLAs.",
+            "Protect data with encryption, DLP, and restricted administrative paths.",
+            "Exercise incident response procedures and recovery validation.",
+        ],
+    },
+    "nis2": {
+        "title": "NIS2 Directive Readiness",
+        "checklist": [
+            "Establish governance accountability at board and executive levels.",
+            "Implement supply-chain risk controls for critical ICT providers.",
+            "Define incident reporting workflows for rapid regulatory notification.",
+            "Harden business continuity and crisis communication procedures.",
+            "Demonstrate security training and cyber hygiene for all personnel.",
         ],
     },
     "hipaa": {

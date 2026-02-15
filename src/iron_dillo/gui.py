@@ -14,7 +14,7 @@ from .llm import LLMError, ModernLLMInterface
 
 __all__ = ["app", "main"]
 
-app = FastAPI(title="Iron Dillo Control Room", version="0.2.0")
+app = FastAPI(title="Iron Dillo Control Room", version="0.3.0")
 llm_interface = ModernLLMInterface()
 
 
@@ -115,12 +115,15 @@ _HTML_PAGE = """<!doctype html>
             </select>
           </label>
           <label>Topic
-            <select name=\"topic\">
-              <option value=\"identity\">Identity</option>
-              <option value=\"devices\">Devices</option>
+            <select name="topic">
+              <option value="identity">Identity</option>
+              <option value="devices">Devices</option>
+              <option value="cloud">Cloud</option>
+              <option value="supply_chain">Supply chain</option>
+              <option value="incident_response">Incident response</option>
             </select>
           </label>
-          <label>Compliance framework<input name=\"compliance\" placeholder=\"nist-csf\" /></label>
+          <label>Compliance framework<input name=\"compliance\" placeholder=\"nist-csf, iso-27001, soc2\" /></label>
           <label>Impact<select name=\"impact\"><option>low</option><option selected>medium</option><option>high</option></select></label>
           <label>Likelihood<select name=\"likelihood\"><option>unlikely</option><option selected>possible</option><option>likely</option></select></label>
           <label><input type=\"checkbox\" name=\"include_fact\" checked /> Include rotating fact</label>

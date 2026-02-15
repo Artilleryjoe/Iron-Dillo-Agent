@@ -7,8 +7,8 @@ briefings.
 
 ## Features
 
-- Tool calling for security awareness tips, compliance reminders, and rapid risk
-  triage.
+- Tool calling for modern security awareness tips, compliance reminders, and rapid risk
+  triage across identity, cloud, supply chain, and incident response.
 - Retrieval Augmented Generation (RAG) primitives to experiment with bespoke
   content libraries.
 - Rotating armadillo and pangolin facts to keep learning light-hearted.
@@ -43,7 +43,7 @@ python agent.py "How should I protect payroll systems?" --audience small_busines
 ```
 
 Available options can be listed with `python agent.py --help`. The CLI stitches
-together security tips, compliance checklists, and a qualitative risk assessment.
+together modern security tips, enterprise compliance checklists, and a qualitative risk assessment.
 
 ### GUI control room
 
