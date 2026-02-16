@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -48,6 +48,9 @@ class EmbedRequest(BaseModel):
 class RagQueryRequest(BaseModel):
     query: str
     top_k: int = Field(5, ge=1, le=20)
+    retrieval_mode: str = Field("vector", pattern="^(vector|hybrid|intel)$")
+    doc_ids: List[str] = Field(default_factory=list)
+    required_threat_tags: List[str] = Field(default_factory=list)
 
 
 class IOCRequest(BaseModel):
@@ -113,11 +116,15 @@ async def embed(
 @app.post("/rag/ingest")
 async def rag_ingest(
     file: UploadFile = File(...),
+    chunk_mode: str = Query("fixed", pattern="^(fixed|paragraph)$"),
     settings: Settings = Depends(get_settings),
     logger=Depends(get_logger),
 ):
-    summary = await _run_in_threadpool(ingest_upload, file, settings=settings)
-    logger.log(route="/rag/ingest", payload={"doc_id": summary["doc_id"], "chunks": summary["chunks"]})
+    summary = await _run_in_threadpool(ingest_upload, file, settings=settings, chunk_mode=chunk_mode)
+    logger.log(
+        route="/rag/ingest",
+        payload={"doc_id": summary["doc_id"], "chunks": summary["chunks"], "chunk_mode": chunk_mode},
+    )
     return summary
 
 
@@ -127,8 +134,26 @@ async def rag_query(
     settings: Settings = Depends(get_settings),
     logger=Depends(get_logger),
 ):
-    results = await _run_in_threadpool(query_rag, payload.query, top_k=payload.top_k, settings=settings)
-    logger.log(route="/rag/query", payload={"query_hash": hash(payload.query), "results": len(results["results"])})
+    try:
+        results = await _run_in_threadpool(
+            query_rag,
+            payload.query,
+            top_k=payload.top_k,
+            settings=settings,
+            retrieval_mode=payload.retrieval_mode,
+            doc_ids=payload.doc_ids,
+            required_threat_tags=payload.required_threat_tags,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    logger.log(
+        route="/rag/query",
+        payload={
+            "query_hash": hash(payload.query),
+            "results": len(results["results"]),
+            "retrieval_mode": payload.retrieval_mode,
+        },
+    )
     return results
 
 

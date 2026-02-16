@@ -6,6 +6,7 @@ Iron Dillo Cybersandbox AI is a local-first playground for experimenting with pr
 
 - **Prompt vector playground** – explore sanitised prompt embeddings and run local chat sessions with Ollama.
 - **Document RAG** – ingest PDFs, Markdown, and text files into a local Chroma vector store backed by sentence-transformer embeddings.
+- **Threat-intel aware retrieval** – modular vector, hybrid, and intel retrieval modes with MITRE-style tactic tagging, threat keyword enrichment, and scoped filtering by document or threat family.
 - **Security mini-apps** – run IOC extraction, email header parsing, and log summarisation utilities without needing outbound connectivity.
 - **Privacy guardrails** – optional egress blocking, metadata sanitisation, and append-only audit logging.
 
@@ -46,6 +47,31 @@ iron_dillo_cybersandbox_ai/
    ```
 
 6. Open `frontend/index.html` in a browser, or serve the `frontend/` directory via a static file server of your choice.
+
+
+## Advanced modular RAG
+
+IDCSA now supports a richer RAG workflow for cybersecurity intelligence use-cases:
+
+- **Modular ingestion** with selectable chunking modes (`fixed` or `paragraph`) via `POST /rag/ingest?chunk_mode=...`.
+- **Threat profiling on ingest** that tags chunks for common modern threat families (e.g. ransomware, zero-day, supply-chain, cloud abuse), extracts CVE/T-technique indicators, and stores tactic metadata for later filtering.
+- **Retrieval modes** exposed through `POST /rag/query`:
+  - `vector` for pure semantic retrieval
+  - `hybrid` for semantic + keyword + threat-tag scoring
+  - `intel` for threat-intel focused ranking using the same hybrid scoring with additional analyst-facing metadata
+- **Scoped querying** with optional `doc_ids` and `required_threat_tags` fields to constrain results to specific intelligence sources or threat categories.
+
+Example query payload:
+
+```json
+{
+  "query": "Summarize ransomware initial access patterns tied to CVE-2024-3400",
+  "top_k": 6,
+  "retrieval_mode": "intel",
+  "doc_ids": ["weekly_intel.md"],
+  "required_threat_tags": ["ransomware", "vulnerability"]
+}
+```
 
 ## Environment variables
 
