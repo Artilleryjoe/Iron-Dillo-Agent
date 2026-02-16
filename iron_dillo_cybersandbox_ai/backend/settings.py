@@ -2,34 +2,25 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseSettings, Field
+from pydantic import BaseModel, Field
 
 
-class Settings(BaseSettings):
-    """Runtime configuration loaded from ``.env`` values when present."""
+class Settings(BaseModel):
+    """Runtime configuration loaded from environment variables when present."""
 
-    allow_egress: bool = Field(False, alias="ALLOW_EGRESS")
-    docs_path: Path = Field(Path("iron_dillo_cybersandbox_ai/vault"), alias="DOCS_PATH")
-    chroma_path: Path = Field(
-        Path("iron_dillo_cybersandbox_ai/data/chroma"), alias="CHROMA_PATH"
-    )
-    model: str = Field("llama3", alias="OLLAMA_MODEL")
-    embedding_model: str = Field(
-        "sentence-transformers/all-MiniLM-L6-v2", alias="EMBEDDING_MODEL"
-    )
-    audit_log_path: Path = Field(
-        Path("iron_dillo_cybersandbox_ai/data/audit.log"), alias="AUDIT_LOG_PATH"
-    )
-    log_format: Literal["json", "text"] = Field("json", alias="AUDIT_LOG_FORMAT")
-    collection_name: str = Field("idcsa_docs", alias="CHROMA_COLLECTION")
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    allow_egress: bool = Field(False)
+    docs_path: Path = Field(Path("iron_dillo_cybersandbox_ai/vault"))
+    chroma_path: Path = Field(Path("iron_dillo_cybersandbox_ai/data/chroma"))
+    model: str = Field("llama3")
+    embedding_model: str = Field("sentence-transformers/all-MiniLM-L6-v2")
+    audit_log_path: Path = Field(Path("iron_dillo_cybersandbox_ai/data/audit.log"))
+    log_format: Literal["json", "text"] = Field("json")
+    collection_name: str = Field("idcsa_docs")
 
     @property
     def sanitized_docs_path(self) -> Path:
@@ -57,7 +48,22 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     """Return cached application settings for dependency injection."""
 
-    return Settings()
+    def read_bool(name: str, default: bool) -> bool:
+        raw = os.getenv(name)
+        if raw is None:
+            return default
+        return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+    return Settings(
+        allow_egress=read_bool("ALLOW_EGRESS", False),
+        docs_path=Path(os.getenv("DOCS_PATH", "iron_dillo_cybersandbox_ai/vault")),
+        chroma_path=Path(os.getenv("CHROMA_PATH", "iron_dillo_cybersandbox_ai/data/chroma")),
+        model=os.getenv("OLLAMA_MODEL", "llama3"),
+        embedding_model=os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
+        audit_log_path=Path(os.getenv("AUDIT_LOG_PATH", "iron_dillo_cybersandbox_ai/data/audit.log")),
+        log_format=os.getenv("AUDIT_LOG_FORMAT", "json"),
+        collection_name=os.getenv("CHROMA_COLLECTION", "idcsa_docs"),
+    )
 
 
 __all__ = ["Settings", "get_settings"]
