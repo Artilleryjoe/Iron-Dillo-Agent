@@ -5,6 +5,7 @@ from .buddy_facts import get_random_fact, list_facts
 from .config import Settings, get_settings, load_settings, set_settings
 from .logging_utils import configure_logging, get_logger
 from .memory import PreferenceStore
+from .product import GuidedIntake, ReadinessBrief, Scenario, generate_readiness_brief
 from .tools import (
     RAGStore,
     RiskReport,
@@ -26,6 +27,10 @@ __all__ = [
     "configure_logging",
     "get_logger",
     "PreferenceStore",
+    "GuidedIntake",
+    "ReadinessBrief",
+    "Scenario",
+    "generate_readiness_brief",
     "RAGStore",
     "RiskReport",
     "assess_risk",

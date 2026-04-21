@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
-from .cli import build_security_brief
+from .product import GuidedIntake, Scenario, generate_readiness_brief
 from .config import get_settings
 from .llm import LLMError, ModernLLMInterface
 
@@ -19,13 +19,18 @@ llm_interface = ModernLLMInterface()
 
 
 class BriefRequest(BaseModel):
-    prompt: str
+    scenario: Scenario = Field(default=Scenario.GENERAL_READINESS_CHECK)
+    business_type: str = Field(default="small business")
+    employee_count_band: str = Field(default="11_50")
+    critical_systems: list[str] = Field(default_factory=lambda: ["email", "finance"])
+    concern: str = Field(default="Need a cybersecurity readiness baseline")
+    safeguards: list[str] = Field(default_factory=list)
+    urgency: str = Field(default="medium")
     audience: str = Field(default="small_businesses")
     topic: str = Field(default="identity")
     compliance: str | None = None
-    impact: str = Field(default="medium")
-    likelihood: str = Field(default="possible")
     include_fact: bool = Field(default=True)
+
 
 
 class ChatRequest(BaseModel):
@@ -46,19 +51,27 @@ async def index() -> HTMLResponse:
 
 @app.post("/api/brief")
 async def api_brief(payload: BriefRequest):
-    response = build_security_brief(
-        prompt=payload.prompt,
+    intake = GuidedIntake(
+        scenario=payload.scenario,
+        business_type=payload.business_type,
+        employee_count_band=payload.employee_count_band,
+        critical_systems=payload.critical_systems,
+        concern=payload.concern,
+        safeguards=payload.safeguards,
+        urgency=payload.urgency,
         audience=payload.audience,
+    )
+    brief, response = generate_readiness_brief(
+        intake,
         topic=payload.topic,
         compliance_standard=payload.compliance,
-        impact=payload.impact,
-        likelihood=payload.likelihood,
         include_fact=payload.include_fact,
     )
     return {
         "message": response.message,
         "fact": response.fact,
         "tool_calls": [call.name for call in response.tool_calls],
+        "brief": brief.model_dump(mode="json"),
     }
 
 
@@ -106,7 +119,30 @@ _HTML_PAGE = """<!doctype html>
       <section class=\"card\">
         <h2>Security Brief Generator</h2>
         <form id=\"brief-form\">
-          <label>Prompt<input name=\"prompt\" required placeholder=\"How do I brief the board on ransomware?\" /></label>
+          <label>Scenario
+            <select name=\"scenario\">
+              <option value=\"general_readiness_check\" selected>General readiness check</option>
+              <option value=\"phishing_concern\">Phishing concern</option>
+              <option value=\"weak_passwords_mfa\">Weak passwords / MFA</option>
+              <option value=\"exposed_website_remote_access\">Exposed website / remote access</option>
+              <option value=\"device_loss\">Device loss</option>
+              <option value=\"vendor_software_trust_concern\">Vendor/software trust concern</option>
+            </select>
+          </label>
+          <label>Business type<input name=\"business_type\" value=\"small business\" required /></label>
+          <label>Employee count band
+            <select name=\"employee_count_band\">
+              <option value=\"1_10\">1-10</option>
+              <option value=\"11_50\" selected>11-50</option>
+              <option value=\"51_250\">51-250</option>
+              <option value=\"251_plus\">251+</option>
+              <option value=\"unknown\">Unknown</option>
+            </select>
+          </label>
+          <label>Critical systems (comma-separated)<input name=\"critical_systems\" value=\"email, finance\" /></label>
+          <label>Primary concern<textarea name=\"concern\" required>Need a cybersecurity readiness baseline</textarea></label>
+          <label>Existing safeguards (comma-separated)<input name=\"safeguards\" placeholder=\"MFA, endpoint protection\" /></label>
+          <label>Urgency<select name=\"urgency\"><option>low</option><option selected>medium</option><option>high</option></select></label>
           <label>Audience
             <select name=\"audience\">
               <option value=\"individuals\">Individuals</option>
@@ -124,8 +160,6 @@ _HTML_PAGE = """<!doctype html>
             </select>
           </label>
           <label>Compliance framework<input name=\"compliance\" placeholder=\"nist-csf, iso-27001, soc2\" /></label>
-          <label>Impact<select name=\"impact\"><option>low</option><option selected>medium</option><option>high</option></select></label>
-          <label>Likelihood<select name=\"likelihood\"><option>unlikely</option><option selected>possible</option><option>likely</option></select></label>
           <label><input type=\"checkbox\" name=\"include_fact\" checked /> Include rotating fact</label>
           <button type=\"submit\">Build brief</button>
         </form>
@@ -159,6 +193,8 @@ _HTML_PAGE = """<!doctype html>
       const formData = new FormData(briefForm);
       const payload = Object.fromEntries(formData.entries());
       payload.include_fact = formData.get('include_fact') === 'on';
+      payload.critical_systems = (payload.critical_systems || '').split(',').map(v => v.trim()).filter(Boolean);
+      payload.safeguards = (payload.safeguards || '').split(',').map(v => v.trim()).filter(Boolean);
       try {
         const response = await fetch('/api/brief', {
           method: 'POST',

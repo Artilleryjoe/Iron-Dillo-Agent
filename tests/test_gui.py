@@ -12,17 +12,22 @@ def test_brief_endpoint_returns_content():
     response = client.post(
         "/api/brief",
         json={
-            "prompt": "Outline a phishing briefing",
+            "scenario": "phishing_concern",
+            "business_type": "small business",
+            "employee_count_band": "11_50",
+            "critical_systems": ["email", "finance"],
+            "concern": "Outline a phishing briefing",
+            "safeguards": ["mfa"],
+            "urgency": "medium",
             "audience": "small_businesses",
             "topic": "identity",
-            "impact": "medium",
-            "likelihood": "possible",
             "include_fact": False,
         },
     )
     payload = response.json()
     assert response.status_code == 200
-    assert "Audience" in payload["message"]
+    assert "## Executive summary" in payload["message"]
+    assert payload["brief"]["score"]["value"] >= 0
     assert payload["tool_calls"], "tool list should not be empty"
 
 

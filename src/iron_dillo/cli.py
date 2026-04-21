@@ -4,13 +4,10 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Optional
-
-from .agent_model import AgentResponse, AgentTurn, ToolCall
-from .buddy_facts import get_random_fact
+from .agent_model import AgentResponse
 from .config import Settings, get_settings, load_settings
 from .logging_utils import configure_logging, get_logger
-from .tools import assess_risk, get_compliance_guide, get_security_tip
+from .product import GuidedIntake, Scenario, generate_readiness_brief
 
 __all__ = ["build_security_brief", "main"]
 
@@ -26,7 +23,7 @@ def build_security_brief(
     include_fact: bool = True,
     settings: Settings | None = None,
 ) -> AgentResponse:
-    """Generate a briefing that blends tips, compliance, and risk insights."""
+    """Generate a briefing through the product workflow with backward-compatible inputs."""
 
     settings = settings or get_settings()
     logger = get_logger("brief")
@@ -42,76 +39,45 @@ def build_security_brief(
         },
     )
 
-    turn = AgentTurn(prompt=prompt, audience=audience, include_fact=include_fact)
+    scenario = Scenario.GENERAL_READINESS_CHECK
+    normalized_prompt = prompt.lower()
+    if "phish" in normalized_prompt:
+        scenario = Scenario.PHISHING_CONCERN
+    elif "password" in normalized_prompt or "mfa" in normalized_prompt:
+        scenario = Scenario.WEAK_PASSWORDS_MFA
+    elif "remote" in normalized_prompt or "website" in normalized_prompt:
+        scenario = Scenario.EXPOSED_WEBSITE_REMOTE_ACCESS
+    elif "lost" in normalized_prompt or "stolen" in normalized_prompt:
+        scenario = Scenario.DEVICE_LOSS
+    elif "vendor" in normalized_prompt or "supplier" in normalized_prompt:
+        scenario = Scenario.VENDOR_SOFTWARE_TRUST_CONCERN
 
-    tip = get_security_tip(turn.audience, topic)
-
-    risk_report = assess_risk(
-        audience=turn.audience,
-        impact=impact,
-        likelihood=likelihood,
-        description=turn.prompt,
+    intake = GuidedIntake(
+        scenario=scenario,
+        business_type="small business",
+        employee_count_band="11_50",
+        critical_systems=[topic],
+        concern=prompt,
+        safeguards=[],
+        urgency="high" if impact == "high" or likelihood == "likely" else "medium",
+        audience=audience,
     )
 
-    message_lines = [
-        f"Audience: {turn.audience.replace('_', ' ').title()}",
-        f"Prompt: {turn.prompt}",
-        "",
-        f"Focus area ({tip['topic']}): {tip['summary']}",
-    ]
-
-    message_lines.append("Key actions:")
-    message_lines.extend(f"- {action}" for action in tip["actions"])
-
-    message_lines.append("")
-    message_lines.append(
-        f"Risk rating: {risk_report.level.title()} (score {risk_report.score})"
+    _, response = generate_readiness_brief(
+        intake,
+        topic=topic,
+        compliance_standard=compliance_standard,
+        include_fact=include_fact,
     )
-    message_lines.append("Risk recommendations:")
-    message_lines.extend(f"- {item}" for item in risk_report.recommendations)
-
-    tool_calls = [
-        ToolCall(name="security_awareness", arguments={"audience": turn.audience, "topic": topic}),
-        ToolCall(
-            name="risk_assessor",
-            arguments={
-                "audience": turn.audience,
-                "impact": impact,
-                "likelihood": likelihood,
-                "description": turn.prompt,
-            },
-        ),
-    ]
-
-    if compliance_standard:
-        guide = get_compliance_guide(compliance_standard)
-        message_lines.append("")
-        message_lines.append(f"Compliance ({guide['title']}):")
-        message_lines.extend(f"- {item}" for item in guide["checklist"])
-        tool_calls.append(
-            ToolCall(
-                name="compliance_guides",
-                arguments={"standard": compliance_standard},
-            )
-        )
-    else:
-        guide = None
-
-    fact: Optional[str] = get_random_fact() if turn.include_fact else None
 
     logger.debug(
         "Brief assembled",
         extra={
-            "tool_calls": [call.name for call in tool_calls],
-            "fact_included": fact is not None,
+            "tool_calls": [call.name for call in response.tool_calls],
+            "fact_included": response.fact is not None,
         },
     )
-
-    return AgentResponse(
-        message="\n".join(message_lines),
-        fact=fact,
-        tool_calls=tool_calls,
-    )
+    return response
 
 
 def _build_parser() -> argparse.ArgumentParser:
